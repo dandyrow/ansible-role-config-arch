@@ -7,12 +7,9 @@ on:
     branches:
       - "master"
 
-env:
-  ROLENAME: <role_name> #TODO: Set role_name
-
 defaults:
   run:
-    working-directory: ${{ env.ROLENAME }}
+    working-directory: config_arch
 
 jobs:
   lint:
@@ -22,7 +19,7 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v3.2.0
         with:
-          path: ${{ env.ROLENAME }}
+          path: config_arch
 
       - name: Set up Python 3.
         uses: actions/setup-python@v4.4.0
@@ -36,34 +33,3 @@ jobs:
         run: |
           yamllint .
           ansible-lint .
-
-  molecule:
-    name: Molecule
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        distro:
-          - ubuntu2204
-          - ubuntu2004
-          - debian11
-          - debian10
-          - archlinux
-
-    steps:
-      - name: Check out the codebase.
-        uses: actions/checkout@v3.2.0
-        with:
-          path: ${{ env.ROLENAME }}
-
-      - name: Set up Python 3.
-        uses: actions/setup-python@v4.4.0
-        with:
-          python-version: '3.x'
-
-      - name: Install test dependencies.
-        run: pip3 install ansible yamllint ansible-lint molecule[podman] podman
-
-      - name: Run Molecule tests.
-        run: molecule test
-        env:
-          MOLECULE_DISTRO: ${{ matrix.distro }}

@@ -1,32 +1,56 @@
-Ansible Role - <role_name>
+Ansible Role - Config_Arch
 =========
 
-A brief description of the role goes here.
+Configures a fresh Arch install. Intended to carry out the tasks which are to be run in an arch-chroot environment after pacstrap is run.
 
-Requirements
-------------
+Install from Ansible Galaxy using this command: `ansible-galaxy install dandyrow.config_arch`.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+View Ansible Galaxy page [here](https://galaxy.ansible.com/dandyrow/config-arch).
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The following variables, defined in defaults/main.yml, should be set to your preference as shown in the example playbook below.
 
-Dependencies
-------------
+The following two varaibles are used in combination with each other to set the system timezone:
+* `region: Europe` - Region for setting your timezone. Must be a valid region found in `/user/share/zoneinfo/`
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+* `city: London` - City for setting your timezone. Must be a valid city found in `/user/share/zoneinfo/{{ region }}/`, where `{{ region }}` is what the above variable is set to.
+
+The following two variables are used in combination with each other to set the system locale:
+* `locale: en_GB.UTF-8` - The locale to set the system to. Must be a locale found in `/etc/locale.gen`.
+
+* `character_set: UTF-8` - The character set to set the system to. Found in the same file as the values for the variable above. 
+
+`keymap: uk` - The keymap to set the system to. Available keymaps can be viewed using this command: `# ls /usr/share/kbd/keymaps/**/*.map.gz`.
+
+`hostname: arch` - Hostname of the system.
+
+`auto_update_systemd_boot: true` - Whether to set systemd-boot to auto update.
+
+`install_cloudinit: true` - Whether to install and enable cloud-init.
+
+The following variables, defined in vars/main.yml, should not need to be set by the user and are defined here to allow users to check no other roles or playbooks overwrite it.
+
+`cloud_init_packages: [ cloud-init, cloud-guest-utils ]` - The names of the packages required to install cloud-init.
+
+Supported Platforms
+-------------------
+
+* Arch Linux
 
 Example Playbook
 ----------------
-
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
+```yaml
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
-
+        - role: dandyrow.config_arch
+          vars:
+            region: Asia
+            city: Tokyo
+            hostname: Desktop-System
+            install_cloudinit: false
+```
 License
 -------
 
@@ -40,4 +64,6 @@ To contribute to the project please fork it, make your changes then open a pull 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Created by Daniel Lowry (dandyrow).
+
+Email: [development@daniellowry.co.uk](mailto:development@daniellowry.co.uk)

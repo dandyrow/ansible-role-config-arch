@@ -1,0 +1,39 @@
+---
+- name: Link local timezone file in /etc/localtime
+  ansible.builtin.file:
+    src: /user/share/zoneinfo/{{ region }}/{{ city }}
+    dest: /etc/localtime
+    force: true
+    owner: root
+    group: root
+    state: link
+
+- name: Set the hardware clock to the current system time
+  ansible.builtin.command: hwclock --systohc
+  changed_when: false
+
+- name: Set the locale in the locale file in the new arch install
+  ansible.builtin.lineinfile:
+    path: /etc/locale.gen
+    regexp: "^#{{ locale }} {{ character_set }}"
+    line: "{{ locale }} {{ character_set }}"
+
+- name: Generate locales
+  ansible.builtin.command: locale-gen
+  changed_when: false
+
+- name: Create locale config file
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/locale.j2"
+    dest: /etc/locale.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Create vconsole config file
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/vconsole.j2"
+    dest: /etc/vconsole.conf
+    owner: root
+    group: root
+    mode: "0644"

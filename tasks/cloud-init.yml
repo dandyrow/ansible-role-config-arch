@@ -1,0 +1,23 @@
+---
+- name: Install cloud-init packages
+  ansible.builtin.package:
+    name: "{{ cloud_init_packages }}"
+    state: present
+    
+- name: Enable cloud-init service
+  ansible.builtin.service:
+    name: cloud-init
+    enabled: true
+
+- name: Enable cloud-final service
+  ansible.builtin.service:
+    name: cloud-final
+    enabled: true
+
+- name: Copy datasource config
+  ansible.builtin.copy:
+    src: "{{ role_path }}/files/99_pve.cfg"
+    dest: /etc/cloud/cloud.cfg.d/99_pve.cfg
+    group: root
+    owner: root
+    mode: '0644'

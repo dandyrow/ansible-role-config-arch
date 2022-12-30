@@ -1,0 +1,46 @@
+---
+- name: Install systemd boot
+  ansible.builtin.command: bootctl install
+  changed_when: false
+
+- name: Enable auto updating of systemd boot
+  ansible.builtin.service:
+    name: systemd-boot-update
+    enabled: "{{ auto_update_systemd_boot }}"
+
+- name: Create loader directory in boot directory
+  ansible.builtin.file:
+    path: /boot/loader
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Copy systemd-boot loader.conf
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/loader.j2"
+    dest: /boot/loader/loader.conf
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create entries directory in loader directory
+  ansible.builtin.file:
+    path: /boot/loader/entries
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Get UUID of root
+  ansible.builtin.command: lsblk /dev/vdb -no UUID
+  register: uuid
+  changed_when: false
+
+- name: Copy loader entry to entries directory
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/arch.j2"
+    dest: /boot/loader/entries/arch.conf
+    owner: root
+    group: root
+    mode: '0755'

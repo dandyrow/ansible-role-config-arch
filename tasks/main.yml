@@ -1,2 +1,25 @@
 ---
-# tasks file for template
+- name: Configure locale related settings
+  ansible.builtin.include_tasks: locale.yml
+
+- name: Create hostname file
+  ansible.builtin.template:
+    src: "{{ role_path }}/templates/hostname.j2"
+    dest: /etc/hostname
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Set root password
+  ansible.builtin.user:
+    name: root
+    password: "{{ root_password }}"
+    update_password: always
+  when: root_password is defined and root_password | length
+
+- name: Install systemd-boot
+  ansible.builtin.include_tasks: systemd-boot.yml
+
+- name: Install cloud-init
+  ansible.builtin.include_tasks: cloud-init.yml
+  when: install_cloudinit is true

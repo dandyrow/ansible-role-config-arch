@@ -4,12 +4,9 @@ name: Release
     tags:
       - "*"
 
-env:
-  ROLENAME: <role_name> #TODO: Set role_name
-
 defaults:
   run:
-    working-directory: ${{ env.ROLENAME }}
+    working-directory: config_arch
 
 jobs:
   release:
@@ -19,7 +16,7 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
         with:
-          path: ${{ env.ROLENAME }}
+          path: config_arch
 
       - name: Set up Python 3.
         uses: actions/setup-python@v2
