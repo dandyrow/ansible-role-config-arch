@@ -4,8 +4,6 @@
     src: /user/share/zoneinfo/{{ region }}/{{ city }}
     dest: /etc/localtime
     force: true
-    owner: root
-    group: root
     state: link
 
 - name: Set the hardware clock to the current system time
