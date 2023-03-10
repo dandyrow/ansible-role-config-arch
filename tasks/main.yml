@@ -23,3 +23,14 @@
 - name: Install cloud-init
   ansible.builtin.include_tasks: cloud-init.yml
   when: install_cloudinit is true
+
+- name: Setup users {{ user.name }}
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    append: "{{ item.append_groups | default(false) }}"
+    home: "{{ item.home | default(omit)}}"
+    create_home: "{{ item.create_home | default(true) }}"
+    password: "{{ item.password | default(omit) }}"
+  with_itmes: "{{ users }}"
+  when: users is defined
